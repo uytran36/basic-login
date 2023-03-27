@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   plugins: [require("@tailwindcss/forms")],
   env: {
     API_HOST: process.env.API_HOST,
