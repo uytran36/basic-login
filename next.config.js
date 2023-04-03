@@ -13,6 +13,12 @@ const nextConfig = {
         port: "",
         pathname: "/img/logos/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.totalwine.com",
+        port: "",
+        pathname: "/media/sys_master/**",
+      },
     ],
   },
 };

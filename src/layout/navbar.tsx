@@ -16,6 +16,7 @@ export default function Navbar({ tabActive }: { tabActive: string }) {
   const navigation = [
     { name: "List Cartoon", href: "/", current: tabActive === "List Cartoon" },
     { name: "List Users", href: "/users", current: tabActive === "List Users" },
+    { name: "List Beers", href: "/beers", current: tabActive === "List Beers" },
   ];
 
   function classNames(...classes: string[]) {
