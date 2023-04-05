@@ -4,6 +4,8 @@ import loadCartoon from "../api-services/cartoon";
 import Layout from "../layout/default";
 import Router from "next/router";
 import { NextPageWithLayout } from "./_app";
+import { createCart, getCartByUserId } from "@/api-services/carts";
+import useHeaders from "@/hooks/useHeaders";
 
 type cartoonType = {
   title: string;
@@ -22,11 +24,34 @@ const Home: NextPageWithLayout = ({
 }: {
   listCartoon: cartoonType[];
 }) => {
+  const headers = useHeaders();
+
   useEffect(() => {
-    if (!window.localStorage.getItem("userId")) {
+    const userId = window.localStorage.getItem("userId");
+    if (!userId) {
       Router.push("/login");
     }
-  }, []);
+
+    const getUserCart = async () => {
+      const userCart = await getCartByUserId(headers, userId);
+      
+      if (userCart.status === 200 && userCart.data.data === null) {
+        const responseCreate = await createCart(headers, {
+          userId: parseInt(userId || "-1"),
+          beers: [],
+          isPayed: false,
+        });
+
+        if (responseCreate.status === 201) {
+          window.localStorage.setItem("cartId", responseCreate.data.data._id);
+        }
+      } else {
+        window.localStorage.setItem("cartId", userCart.data.data._id);
+      }
+    };
+
+    getUserCart();
+  }, [headers]);
 
   return (
     <div className="grid grid-cols-4 grid-rows-3 py-12">

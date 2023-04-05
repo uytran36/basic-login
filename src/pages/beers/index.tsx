@@ -1,4 +1,4 @@
-import { addBeerToCart, getAllBeers } from "@/api-services/beers";
+import { getAllBeers } from "@/api-services/beers";
 import useHeaders from "@/hooks/useHeaders";
 import Layout from "@/layout/default";
 import { beerType } from "@/types/beerTypes";
@@ -6,15 +6,19 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { ReactElement, useEffect, useState } from "react";
 import { NextPageWithLayout } from "../_app";
+import { updateCart } from "@/api-services/carts";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Beers: NextPageWithLayout = () => {
   const [beers, setBeers] = useState<beerType[]>([]);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(24);
   const [offset, setOffset] = useState(0);
   const [totalBeers, setTotalBeers] = useState(0);
   const [jump, setJump] = useState(0);
 
   const headers = useHeaders();
+  const notify = () => toast("Added successfully!", { type: "success", autoClose: 1000 });
 
   useEffect(() => {
     const fetchBeers = async () => {
@@ -42,11 +46,21 @@ const Beers: NextPageWithLayout = () => {
     }
   };
 
+  const handleChangePageSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPageSize(parseInt(e.target.value));
+    setOffset(0);
+  };
+
   const handleClickAdd = async (id: number) => {
-    const userId = parseInt(window.localStorage.getItem("userId") || '0');
-    const res = await addBeerToCart(headers, id, userId, 1);
+    const cartId = localStorage.getItem("cartId");
+    const item = {
+      beerId: id,
+      quantity: 1,
+    };
+
+    const res = await updateCart(headers, cartId, item);
     if (res.status === 200) {
-      console.log(res.data);
+      notify();
     }
   };
 
@@ -236,9 +250,23 @@ const Beers: NextPageWithLayout = () => {
                 <span className="sr-only">Next</span>
                 <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
               </div>
+              <div className="px-4">
+                <select
+                  id="pageSize"
+                  name="pageSize"
+                  autoComplete="pageSize"
+                  onChange={handleChangePageSize}
+                  className="px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                >
+                  <option>12 / page</option>
+                  <option>24 / page</option>
+                  <option>36 / page</option>
+                </select>
+              </div>
             </nav>
           </div>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

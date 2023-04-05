@@ -57,18 +57,3 @@ export async function updateBeer(
   return res;
 }
 
-export async function addBeerToCart(
-  headers: Headers,
-  beerId: number,
-  userId: number,
-  quantity: number
-) {
-  const res = await axios.post(
-    `http://${process.env.API_HOST}/users/cart`,
-    { beerId, userId, quantity },
-    {
-      headers,
-    }
-  );
-  return res;
-}
